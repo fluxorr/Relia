@@ -1,18 +1,18 @@
-import React, { Suspense, useRef, useMemo, useState } from 'react';
+import React, { Suspense, useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, Environment } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
 
 // Extend JSX.IntrinsicElements to include R3F elements that are missing from the type definitions
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      shaderMaterial: any;
-      ambientLight: any;
-    }
-  }
-}
+// declare global {
+//   namespace JSX {
+//     interface IntrinsicElements {
+//       shaderMaterial: any;
+//       ambientLight: any;
+//     }
+//   }
+// }
 
 // Custom Dither Shader
 const DitherShaderMaterial = {
@@ -78,6 +78,27 @@ const DitherShaderMaterial = {
 const FluidSphere = () => {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const [sphereScale, setSphereScale] = useState(2.2);
+
+  // Responsive Scale Logic
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setSphereScale(0.7); // Mobile
+      } else if (width < 1280) {
+        setSphereScale(1.2); // Laptop/Tablet
+      } else {
+        setSphereScale(1.2); // Large Desktop
+      }
+    };
+
+    // Initial check
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Memoize the shader material to avoid recreation on every render
   const shaderArgs = useMemo(() => ({
@@ -112,7 +133,8 @@ const FluidSphere = () => {
   });
 
   return (
-    <Sphere args={[1, 64, 64]} ref={meshRef} scale={2.2}>
+    <Sphere args={[1, 64, 64]} ref={meshRef} scale={sphereScale}>
+      {/* @ts-ignore */}
       <shaderMaterial
         ref={materialRef}
         attach="material"
@@ -166,6 +188,7 @@ export const Hero = () => {
           <Suspense fallback={null}>
             {/* Environment adds subtle reflections even to custom shader if mixed right, 
                         but primarily we rely on the shader's light calculation here. */}
+            {/* @ts-ignore */}
             <ambientLight intensity={0.2} />
             <FluidSphere />
           </Suspense>
@@ -190,7 +213,7 @@ export const Hero = () => {
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             transition={{ delay: 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-lg md:text-xl text-[#737373] font-light max-w-lg mx-auto tracking-wide"
+            className="text-lg md:text-xl text-zinc-200 font-light max-w-lg mx-auto tracking-wide"
           >
             THE INTELLIGENT FILTER
           </motion.p>

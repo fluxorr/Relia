@@ -10,17 +10,15 @@ export const Synthesis = () => {
 
   // Start positions (Chaos)
   const startPositions = [
-    { x: '20%', y: '20%' },
-    { x: '80%', y: '15%' },
-    { x: '10%', y: '80%' },
-    { x: '90%', y: '75%' },
-    { x: '30%', y: '90%' },
-    { x: '60%', y: '10%' },
+    { x: '15%', y: '15%' },
+    { x: '85%', y: '20%' },
+    { x: '10%', y: '85%' },
+    { x: '90%', y: '80%' },
+    { x: '25%', y: '90%' },
+    { x: '75%', y: '10%' },
   ];
 
   // End positions (Order - Hexagon)
-  // Hexagon coords relative to center (50%, 50%)
-  // Points at 60deg intervals. Radius approx 15%
   const endPositions = [
     { x: '50%', y: '35%' }, // Top
     { x: '63%', y: '42.5%' }, // Top Right
@@ -38,43 +36,21 @@ export const Synthesis = () => {
 
   // Transform Hook Generator
   const useNodeTransform = (index: number) => {
+    // We map scroll progress to the transition between start and end coordinates
     const x = useTransform(scrollYProgress, [0.2, 0.8], [startPositions[index].x, endPositions[index].x]);
     const y = useTransform(scrollYProgress, [0.2, 0.8], [startPositions[index].y, endPositions[index].y]);
     return { x, y };
   };
 
   return (
-    <section ref={containerRef} className="relative w-full h-[300vh] bg-[#050505] text-white">
+    <section ref={containerRef} className="relative w-full h-[150vh] md:h-[300vh] bg-[#050505] text-white">
       <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row overflow-hidden">
 
-        {/* Left: Text Info */}
-        <div className="w-full md:w-1/3 flex flex-col justify-center px-12 border-r border-[#1A1A1A] bg-[#050505]/95 backdrop-blur-sm z-20">
-          <motion.div style={{ opacity }}>
-            <h2 className="text-4xl font-bold tracking-tight mb-6 text-white">
-              Synthesis
-            </h2>
-            <p className="text-[#737373] text-lg max-w-sm leading-relaxed">
-              Disparate signals are noise. Connected signals are intelligence.
-            </p>
-            <div className="mt-12 space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-[#333] rounded-full" />
-                <span className="text-sm font-mono text-[#555]">CROSS-REFERENCE</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-[#333] rounded-full" />
-                <span className="text-sm font-mono text-[#555]">PATTERN MATCHING</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-2 h-2 bg-white rounded-full" />
-                <span className="text-sm font-mono text-white">INSIGHT GENERATION</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Right: Visualizer */}
-        <div className="w-full md:w-2/3 relative flex items-center justify-center bg-[#050505]">
+        {/* 
+           VISUALIZER LAYER 
+           Hidden on Mobile (< md), Visible on Tablet+
+        */}
+        <div className="hidden md:flex md:w-2/3 md:h-full items-center justify-center bg-[#050505] z-0 md:order-2 relative">
 
           {/* Grid Background */}
           <div className="absolute inset-0 z-0 opacity-10"
@@ -126,15 +102,47 @@ export const Synthesis = () => {
                   style={{ left: x, top: y }}
                   whileHover={{ scale: 2 }}
                 >
-                  <div className="absolute top-4 left-4 opacity-0 hover:opacity-100 whitespace-nowrap text-[10px] font-mono bg-white text-black px-2 py-1 pointer-events-none">
-                    Data Point 0{i + 1}
-                  </div>
                 </motion.div>
               </React.Fragment>
             );
           })}
-
         </div>
+
+        {/* 
+            TEXT LAYER 
+            On mobile: Full width, centered text, relative positioning.
+            On desktop: 1/3 width sidebar.
+        */}
+        <div className="w-full h-full md:w-1/3 flex flex-col justify-center px-6 pt-24 md:pt-0 md:px-12 md:border-r border-[#1A1A1A] z-20 md:order-1 relative bg-[#050505]">
+          <motion.div style={{ opacity }} className="max-w-sm pointer-events-auto">
+            <div className="p-0">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 md:mb-6 text-white">
+                Synthesis
+              </h2>
+              <p className="text-[#737373] text-sm md:text-lg leading-relaxed">
+                Disparate signals are noise. Connected signals are intelligence.
+                <span className="md:hidden mt-2 block text-[#555] text-xs">
+                  (Visualization optimized for desktop)
+                </span>
+              </p>
+              <div className="mt-8 space-y-3 hidden md:block">
+                <div className="flex items-center space-x-4">
+                  <div className="w-2 h-2 bg-[#333] rounded-full" />
+                  <span className="text-sm font-mono text-[#555]">CROSS-REFERENCE</span>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-2 h-2 bg-[#333] rounded-full" />
+                  <span className="text-sm font-mono text-[#555]">PATTERN MATCHING</span>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-2 h-2 bg-white rounded-full" />
+                  <span className="text-sm font-mono text-white">INSIGHT GENERATION</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
       </div>
     </section>
   );

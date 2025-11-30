@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 
 // Noise Canvas Component for the "Clarity" effect
 const NoiseCanvas = ({ opacity }: { opacity: number }) => {
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -51,6 +52,7 @@ const NoiseCanvas = ({ opacity }: { opacity: number }) => {
 
 export const Footer = () => {
     const [email, setEmail] = useState('');
+    const blurAmount = Math.max(0, 8 - email.length);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     // Map email length to noise opacity (1 -> 0)
@@ -109,6 +111,7 @@ export const Footer = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="ENTER EMAIL"
                             className="relative z-10 w-full bg-transparent text-center text-5xl md:text-8xl font-bold text-[#F5F5F5] placeholder-[#333] outline-none border-b-2 border-[#333] focus:border-white transition-all py-12 uppercase tracking-tighter"
+                            style={{ filter: `blur(${isSubmitted ? 0 : blurAmount}px)`, transition: 'filter 0.3s ease' }}
                             disabled={isSubmitted}
                             autoFocus
                         />
@@ -145,8 +148,8 @@ export const Footer = () => {
 
             <div className="absolute bottom-8 w-full px-12 flex justify-between items-end text-[10px] text-[#333] font-mono uppercase">
                 <div>
-                    © 2024 Relia Systems<br />
-                    San Francisco, CA
+                    © 2025 Relia Systems<br />
+                    Pune, IN
                 </div>
                 <div className="flex space-x-8">
                     <a href="#" className="hover:text-white transition-colors" data-interactive>Twitter</a>
