@@ -1,8 +1,18 @@
-import React, { Suspense, useRef, useMemo } from 'react';
+import React, { Suspense, useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, Environment, shaderMaterial } from '@react-three/drei';
+import { Sphere, Environment } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
+
+// Extend JSX.IntrinsicElements to include R3F elements that are missing from the type definitions
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      shaderMaterial: any;
+      ambientLight: any;
+    }
+  }
+}
 
 // Custom Dither Shader
 const DitherShaderMaterial = {
@@ -84,25 +94,25 @@ const FluidSphere = () => {
 
   useFrame((state) => {
     if (meshRef.current && materialRef.current) {
+      // Rotate
+      meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.15;
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.2;
 
-      meshRef.current.rotation.x = state.clock.getElapsedTime() * 10;
-      meshRef.current.rotation.y = state.clock.getElapsedTime() * 7;
-
-
-      const { x, y } = state.pointer;
-      meshRef.current.rotation.x += y * 0.5;
-      meshRef.current.rotation.y += x * 0.5;
+      // Interactive look
+      const { x, y } = state.mouse;
+      meshRef.current.rotation.x += y * 0.05;
+      meshRef.current.rotation.y += x * 0.05;
 
       // Update uniforms
       materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
 
       // Pulse the light position slightly
-      materialRef.current.uniforms.uLightPos.value.x = 5 + Math.sin(state.clock.getElapsedTime()) * 10;
+      materialRef.current.uniforms.uLightPos.value.x = 5 + Math.sin(state.clock.getElapsedTime()) * 2;
     }
   });
 
   return (
-    <Sphere args={[1, 64, 64]} ref={meshRef} scale={1.2}>
+    <Sphere args={[1, 64, 64]} ref={meshRef} scale={2.2}>
       <shaderMaterial
         ref={materialRef}
         attach="material"
@@ -147,15 +157,15 @@ const MagneticButton = () => {
   );
 };
 
-import { useState } from 'react';
-
 export const Hero = () => {
   return (
     <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-[#050505]">
-
+      {/* Background R3F Canvas */}
       <div className="absolute inset-0 z-0">
         <Canvas camera={{ position: [0, 0, 5], fov: 35 }}>
           <Suspense fallback={null}>
+            {/* Environment adds subtle reflections even to custom shader if mixed right, 
+                        but primarily we rely on the shader's light calculation here. */}
             <ambientLight intensity={0.2} />
             <FluidSphere />
           </Suspense>
@@ -180,7 +190,7 @@ export const Hero = () => {
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             transition={{ delay: 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-lg md:text-xl text-[#e8e6e6] font-light max-w-lg mx-auto tracking-widest"
+            className="text-lg md:text-xl text-[#737373] font-light max-w-lg mx-auto tracking-wide"
           >
             THE INTELLIGENT FILTER
           </motion.p>
@@ -198,7 +208,7 @@ export const Hero = () => {
       {/* Decorative Elements */}
       <div className="absolute bottom-12 left-12 text-[10px] font-mono text-[#333] hidden md:block">
         SYSTEM STATUS: ONLINE<br />
-        V.0.4.0 [STABLE]
+        V.2.4.0 [STABLE]
       </div>
       <div className="absolute top-1/2 left-0 w-full h-px bg-[#111] -z-10" />
       <div className="absolute left-1/2 top-0 w-px h-full bg-[#111] -z-10" />

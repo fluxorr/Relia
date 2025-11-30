@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { motion, useScroll, useSpring, useTransform, useMotionValue, useVelocity, useAnimationFrame } from 'framer-motion';
 import { wrap } from '@motionone/utils';
@@ -32,11 +31,11 @@ const LiquidIcon = ({ path, count }: { path: string, count: number }) => {
                     </defs>
                     <g clipPath={`url(#clip-${path.substring(0, 10)})`}>
                         {/* The filling liquid */}
-                        <motion.rect 
-                            x="0" 
-                            y="24" 
-                            width="24" 
-                            height="24" 
+                        <motion.rect
+                            x="0"
+                            y="24"
+                            width="24"
+                            height="24"
                             className="fill-white"
                             initial={{ y: 24 }}
                             whileHover={{ y: 0 }}
@@ -47,7 +46,7 @@ const LiquidIcon = ({ path, count }: { path: string, count: number }) => {
             </div>
 
             {/* Tooltip */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.8, y: 10 }}
                 whileHover={{ opacity: 1, scale: 1, y: 0 }}
                 className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-white text-black text-[10px] font-mono px-2 py-1 whitespace-nowrap z-20 pointer-events-none"
@@ -63,52 +62,52 @@ export const DataStream = () => {
     const { scrollY } = useScroll();
     const scrollVelocity = useVelocity(scrollY);
     const smoothVelocity = useSpring(scrollVelocity, {
-      damping: 50,
-      stiffness: 400
+        damping: 50,
+        stiffness: 400
     });
     const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], {
-      clamp: false
+        clamp: false
     });
-  
+
     const x = useTransform(baseX, (v) => `${wrap(-20, -45, v)}%`);
-  
+
     const directionFactor = useRef<number>(1);
     useAnimationFrame((t, delta) => {
-      let moveBy = directionFactor.current * 2 * (delta / 1000); // Base speed
-      
-      // Speed up on scroll
-      if (velocityFactor.get() < 0) {
-        directionFactor.current = -1;
-      } else if (velocityFactor.get() > 0) {
-        directionFactor.current = 1;
-      }
-  
-      moveBy += directionFactor.current * moveBy * velocityFactor.get();
-  
-      baseX.set(baseX.get() + moveBy);
+        let moveBy = directionFactor.current * 2 * (delta / 1000); // Base speed
+
+        // Speed up on scroll
+        if (velocityFactor.get() < 0) {
+            directionFactor.current = -1;
+        } else if (velocityFactor.get() > 0) {
+            directionFactor.current = 1;
+        }
+
+        moveBy += directionFactor.current * moveBy * velocityFactor.get();
+
+        baseX.set(baseX.get() + moveBy);
     });
-  
+
     return (
-      <section className="w-full py-32 bg-[#050505] border-t border-[#1A1A1A] overflow-hidden relative">
-          <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-[#050505] to-transparent z-10" />
-          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-[#050505] to-transparent z-10" />
-          
-          <div className="flex items-center mb-16 px-8 relative z-20">
-              <span className="text-xs font-mono text-[#737373] uppercase tracking-widest mr-4">Ingestion Stream</span>
-              <div className="h-px w-24 bg-[#1A1A1A]"></div>
-          </div>
-  
-          <div className="relative flex overflow-hidden">
-              <motion.div 
-                  className="flex space-x-32 items-center"
-                  style={{ x }}
-              >
-                  {/* Quadruple the list for smooth wrapping */}
-                  {[...icons, ...icons, ...icons, ...icons].map((icon, i) => (
-                      <LiquidIcon key={i} path={icon.path} count={Math.floor(Math.random() * 40) + 12} />
-                  ))}
-              </motion.div>
-          </div>
-      </section>
+        <section className="w-full py-32 bg-[#050505] border-t border-[#1A1A1A] overflow-hidden relative">
+            <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-[#050505] to-transparent z-10" />
+            <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-[#050505] to-transparent z-10" />
+
+            <div className="flex items-center mb-16 px-8 relative z-20">
+                <span className="text-xs font-mono text-[#737373] uppercase tracking-widest mr-4">Ingestion Stream</span>
+                <div className="h-px w-24 bg-[#1A1A1A]"></div>
+            </div>
+
+            <div className="relative flex overflow-hidden">
+                <motion.div
+                    className="flex space-x-32 items-center"
+                    style={{ x }}
+                >
+                    {/* Quadruple the list for smooth wrapping */}
+                    {[...icons, ...icons, ...icons, ...icons].map((icon, i) => (
+                        <LiquidIcon key={i} path={icon.path} count={Math.floor(Math.random() * 40) + 12} />
+                    ))}
+                </motion.div>
+            </div>
+        </section>
     );
-  };
+};
