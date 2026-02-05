@@ -51,7 +51,7 @@ const LiquidIcon = ({ path, count }: { path: string, count: number }) => {
                 whileHover={{ opacity: 1, scale: 1, y: 0 }}
                 className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-white text-black text-[10px] font-mono px-2 py-1 whitespace-nowrap z-20 pointer-events-none"
             >
-                {count} THREADS ANALYZED
+                {count} THREADS ANALYZED!
             </motion.div>
         </div>
     )
